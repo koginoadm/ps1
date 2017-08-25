@@ -37,7 +37,7 @@ $vInstTmp = "$vInstExe.tmp"
 ################
 # main
 ################
-# Administrator
+# Check Administrator
 if (-Not([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
 {
     Write-Warning "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [ERROR]: Run as Administrator."
@@ -45,7 +45,7 @@ if (-Not([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdenti
     exit 1
 }
 
-# CPU
+# Check PROCESSOR_ARCHITECTURE
 if ("$env:PROCESSOR_ARCHITECTURE" -ne 'AMD64')
 {
     Write-Warning "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [ERROR]: `$env:PROCESSOR_ARCHITECTURE: $env:PROCESSOR_ARCHITECTURE"
