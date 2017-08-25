@@ -32,6 +32,7 @@ $tmpf = "$tmpd\.tmp.virtualbox.log"
 $vStableUri = "$vBase$(Invoke-RestMethod -Uri $vBase | %{$_ -creplace '.*href="([^"]*)".*','$1'} > $tmpf ; cat $tmpf | ?{ $_ -match "^[0-9]+`.[0-9]+`.[0-9]+/" } | select -Last 1; rm $tmpf)"
 $vInstUri = "$vStableUri$(Invoke-RestMethod -Uri $vStableUri | %{$_ -creplace '.*href="([^"]*)".*','$1'} > $tmpf ; cat $tmpf | ?{ $_ -match "`.exe$" } | select -Last 1; rm $tmpf)"
 $vInstExe = "$tmpd\$(Split-Path -Leaf $vInstUri)"
+$vInstTmp = "$vInstExe.tmp"
 
 ################
 # main
@@ -56,7 +57,8 @@ if ("$env:PROCESSOR_ARCHITECTURE" -ne 'AMD64')
 # Download Installer
 if (-Not(Test-Path -Path $vInstExe))
 {
-    Invoke-RestMethod -Uri $vInstUri -OutFile $vInstExe
+    Invoke-RestMethod -Uri $vInstUri -OutFile $vInstTmp
+    Move-Item $vInstTmp $vInstExe
 }
 
 # Install VirtualBox
