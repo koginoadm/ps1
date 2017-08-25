@@ -7,7 +7,7 @@
 #     Install Vim.
 #
 # - Run
-#     powershell.exe -Command { Start-Process -FilePath powershell.exe -Args '-Command "Invoke-RestMethod -Uri https://koginoadm.github.io/ps1/install-virtualbox.ps1 | powershell.exe -"' -Verb RUNAS }
+#     powershell.exe -Command "Start-Process -FilePath powershell.exe -Args '-Command "Invoke-RestMethod -Uri https://koginoadm.github.io/ps1/install-virtualbox.ps1 | powershell.exe -"' -Verb RUNAS"
 #
 # - Reference
 #     https://www.virtualbox.org/wiki/Downloads
