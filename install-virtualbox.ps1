@@ -67,9 +67,9 @@ if (-Not(Test-Path -Path "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe"))
     # msiexec.exe
     [string] $msi = Resolve-Path "$tmpd\VirtualBox-*amd64.msi"
     Start-Process -FilePath msiexec.exe -Args "/i $msi /quiet" -PassThru -Wait
+    Remove-Item -Recurse $tmpd
 }
 
 # Start VirtualBox
 Start-Process -FilePath "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe" -PassThru
-
 
