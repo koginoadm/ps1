@@ -1,3 +1,4 @@
+@setlocal enableextensions enabledelayedexpansion & set "PATH0=%~f0" & PowerShell.exe -Command "& (Invoke-Expression -Command ('{#' + ((Get-Content '!PATH0:'=''!') -join \"`n\") + '}'))" %* & exit /b !errorlevel!
 # 
 # - Name
 #     install-vim.bat
@@ -6,7 +7,7 @@
 #     Install Vim.
 #
 # - Install
-#     powershell.exe -Command "Invoke-RestMethod -Uri "https://koginoadm.github.io/ps1/install-virtualbox.ps1""
+#     powershell.exe -Command "Invoke-RestMethod -Uri "https://koginoadm.github.io/ps1/install-virtualbox.bat""
 #
 # - Reference
 #     https://www.virtualbox.org/wiki/Downloads
