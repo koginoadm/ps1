@@ -62,5 +62,6 @@ Start-Process -FilePath $vInstExe -Args "--silent --extract --path $tmpd" -PassT
 [string] $msi = Resolve-Path "$tmpd\VirtualBox-*amd64.msi"
 Start-Process -FilePath msiexec.exe -Args "/i $msi /quiet" -PassThru -Wait
 
+# Start VirtualBox
 Start-Process -FilePath "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe" -PassThru
 
