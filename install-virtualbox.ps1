@@ -54,14 +54,20 @@ if ("$env:PROCESSOR_ARCHITECTURE" -ne 'AMD64')
 
 
 # Download Installer
-Invoke-RestMethod -Uri $vInstUri -OutFile $vInstExe
-
-# Extract package
-Start-Process -FilePath $vInstExe -Args "--silent --extract --path $tmpd" -PassThru -Wait
+if (-Not(Test-Path -Path $vInstExe))
+{
+    Invoke-RestMethod -Uri $vInstUri -OutFile $vInstExe
+}
 
 # Install VirtualBox
-[string] $msi = Resolve-Path "$tmpd\VirtualBox-*amd64.msi"
-Start-Process -FilePath msiexec.exe -Args "/i $msi /quiet" -PassThru -Wait
+if (-Not(Test-Path -Path "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe"))
+{
+    # Extract package
+    Start-Process -FilePath $vInstExe -Args "--silent --extract --path $tmpd" -PassThru -Wait
+    # msiexec.exe
+    [string] $msi = Resolve-Path "$tmpd\VirtualBox-*amd64.msi"
+    Start-Process -FilePath msiexec.exe -Args "/i $msi /quiet" -PassThru -Wait
+}
 
 # Start VirtualBox
 Start-Process -FilePath "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe" -PassThru
