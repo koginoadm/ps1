@@ -75,4 +75,3 @@ if (-Not(Test-Path -Path "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe"))
 # Start VirtualBox
 Start-Process -FilePath "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe" -PassThru
 
-
