@@ -7,7 +7,7 @@
 #     Install Vim.
 #
 # - Install
-#     powershell.exe -Command "Invoke-RestMethod -Uri "https://koginoadm.github.io/ps1/install-virtualbox.bat""
+#     powershell.exe -Command "Invoke-RestMethod -Uri "https://koginoadm.github.io/ps1/install-virtualbox.bat -OutFile "$env:USERPROFILE\install-virtualbox.bat""
 #
 # - Reference
 #     https://www.virtualbox.org/wiki/Downloads
