@@ -31,7 +31,7 @@ $tmpd = "$env:USERPROFILE\.tmp.vbx"; if (-Not(Test-Path -Path $tmpd)) { mkdir $t
 $tmpf = "$tmpd\.tmp.virtualbox.log"
 $vStableUri = "$vBase$(Invoke-RestMethod -Uri $vBase | %{$_ -creplace '.*href="([^"]*)".*','$1'} > $tmpf ; cat $tmpf | ?{ $_ -match "^[0-9]+`.[0-9]+`.[0-9]+/" } | select -Last 1; rm $tmpf)"
 $vInstUri = "$vStableUri$(Invoke-RestMethod -Uri $vStableUri | %{$_ -creplace '.*href="([^"]*)".*','$1'} > $tmpf ; cat $tmpf | ?{ $_ -match "`.exe$" } | select -Last 1; rm $tmpf)"
-$vInstExe = "$env:USERPROFILE\$(Split-Path -Leaf $vInstUri)"
+$vInstExe = "$tmpd\$(Split-Path -Leaf $vInstUri)"
 
 ################
 # main
