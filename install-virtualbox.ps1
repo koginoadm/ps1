@@ -7,14 +7,13 @@
 #     Install Vim.
 #
 # - Install
-#     powershell.exe -Command "Invoke-RestMethod -Uri "https://djeeno.github.io/ps1/install-vim.bat" -OutFile "$env:USERPROFILE\install-vim.bat""
+#     powershell.exe -Command "Invoke-RestMethod -Uri "https://koginoadm.github.io/ps1/install-virtualbox.ps1""
 #
 # - Reference
-#     Vim - KaoriYa - https://www.kaoriya.net/software/vim/
+#     https://www.virtualbox.org/wiki/Downloads
 # 
 # - Revision
-#     2016-05-24 created.
-#     2016-06-08 modified.
+#     2016-08-26 created.
 #     yyyy-MM-dd modified.
 # 
 
