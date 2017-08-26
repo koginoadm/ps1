@@ -28,9 +28,8 @@ $vBase = 'http://download.virtualbox.org/virtualbox/'
 # variables
 ################
 $tmpd = "$env:USERPROFILE\.tmp.vbx"; if (-Not(Test-Path -Path $tmpd)) { mkdir $tmpd }
-$tmpf = "$tmpd\.tmp.virtualbox.log"
-$vStableUri = "$vBase$(Invoke-RestMethod -Uri $vBase | %{$_ -creplace '.*href="([^"]*)".*','$1'} > $tmpf ; cat $tmpf | ?{ $_ -match "^[0-9]+`.[0-9]+`.[0-9]+/" } | select -Last 1; rm $tmpf)"
-$vInstUri = "$vStableUri$(Invoke-RestMethod -Uri $vStableUri | %{$_ -creplace '.*href="([^"]*)".*','$1'} > $tmpf ; cat $tmpf | ?{ $_ -match "`.exe$" } | select -Last 1; rm $tmpf)"
+$vStableUri = "$vBase$((Invoke-RestMethod -Uri $vBase | %{$_ -creplace '.*href="([^"]*)".*','$1'}) -split "`n" | ?{ $_ -match "^[0-9]+`.[0-9]+`.[0-9]+/" } | select -Last 1)"
+$vInstUri = "$vStableUri$((Invoke-RestMethod -Uri $vStableUri | %{$_ -creplace '.*href="([^"]*)".*','$1'}) -split "`n" | ?{ $_ -match "`.exe$" } | select -Last 1)"
 $vInstExe = "$tmpd\$(Split-Path -Leaf $vInstUri)"
 $vInstTmp = "$vInstExe.tmp"
 
