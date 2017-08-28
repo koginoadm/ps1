@@ -14,4 +14,4 @@ rem #     2017-05-10 created.
 rem #     yyyy-MM-dd modified.
 rem # 
 
-start powershell.exe -Command 'Start-Process -Verb RUNAS notepad C:\Windows\System32\drivers\etc\hosts'
+start powershell.exe -Command "Start-Process -Verb RUNAS notepad C:\Windows\System32\drivers\etc\hosts'"
