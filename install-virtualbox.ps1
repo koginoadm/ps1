@@ -13,8 +13,8 @@
 #     https://www.virtualbox.org/wiki/Downloads
 # 
 # - Revision
-#     2016-08-25 created.
-#     2016-08-26 modified.
+#     2016-08-25 created by https://github.com/koginoadm.
+#     2016-08-26 modified by https://github.com/koginoadm.
 #     yyyy-MM-dd modified.
 # 
 
