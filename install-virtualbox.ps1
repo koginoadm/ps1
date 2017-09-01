@@ -22,16 +22,18 @@
 ################
 # constant
 ################
-$vBase = 'http://download.virtualbox.org/virtualbox/'
+${BASE_URI} = 'http://download.virtualbox.org/virtualbox/'
+${CPU_ARCHITECTURE} = 'AMD64'
+${VIRTUALBOX} = 'C:\Program Files\Oracle\VirtualBox\VirtualBox.exe'
 
 ################
 # variables
 ################
-$tmpd = "$env:USERPROFILE\.tmp.vbx"; if (-Not(Test-Path -Path $tmpd)) { mkdir $tmpd }
-$vStableUri = "$vBase$((Invoke-RestMethod -Uri $vBase | %{$_ -creplace '.*href="([^"]*)".*','$1'}) -split "`n" | ?{ $_ -match "^[0-9]+`.[0-9]+`.[0-9]+/" } | select -Last 1)"
-$vInstUri = "$vStableUri$((Invoke-RestMethod -Uri $vStableUri | %{$_ -creplace '.*href="([^"]*)".*','$1'}) -split "`n" | ?{ $_ -match "`.exe$" } | select -Last 1)"
-$vInstExe = "$tmpd\$(Split-Path -Leaf $vInstUri)"
-$vInstTmp = "$vInstExe.tmp"
+${vTmpDir} = "$env:USERPROFILE\.tmp.vbx"; if (-Not(Test-Path -Path ${vTmpDir})) { mkdir ${vTmpDir} }
+${vStableUri} = "${BASE_URI}$((Invoke-RestMethod -Uri ${BASE_URI} | %{$_ -creplace '.*href="([^"]*)".*','$1'}) -split "`n" | ?{ $_ -match "^[0-9]+`.[0-9]+`.[0-9]+/" } | select -Last 1)"
+${vInstUri} = "${vStableUri}$((Invoke-RestMethod -Uri ${vStableUri} | %{$_ -creplace '.*href="([^"]*)".*','$1'}) -split "`n" | ?{ $_ -match "`.exe$" } | select -Last 1)"
+${vInstExe} = "${vTmpDir}\$(Split-Path -Leaf ${vInstUri})"
+${vInstTmp} = "${vInstExe}.tmp"
 
 ################
 # main
@@ -45,7 +47,7 @@ if (-Not([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdenti
 }
 
 # Check PROCESSOR_ARCHITECTURE
-if ("$env:PROCESSOR_ARCHITECTURE" -ne 'AMD64')
+if ("$env:PROCESSOR_ARCHITECTURE" -ne ${CPU_ARCHITECTURE})
 {
     Write-Warning "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [ERROR]: `$env:PROCESSOR_ARCHITECTURE: $env:PROCESSOR_ARCHITECTURE"
     Start-Sleep 5
@@ -54,23 +56,23 @@ if ("$env:PROCESSOR_ARCHITECTURE" -ne 'AMD64')
 
 
 # Download Installer
-if (-Not(Test-Path -Path $vInstExe))
+if (-Not(Test-Path -Path ${vInstExe}))
 {
-    Invoke-RestMethod -Uri $vInstUri -OutFile $vInstTmp
-    Move-Item $vInstTmp $vInstExe
+    Invoke-RestMethod -Uri ${vInstUri} -OutFile ${vInstTmp}
+    Move-Item ${vInstTmp} ${vInstExe}
 }
 
 # Install VirtualBox
-if (-Not(Test-Path -Path "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe"))
+if (-Not(Test-Path -Path "${VIRTUALBOX}"))
 {
     # Extract package
-    Start-Process -FilePath $vInstExe -Args "--silent --extract --path $tmpd" -PassThru -Wait
+    Start-Process -FilePath ${vInstExe} -Args "--silent --extract --path ${vTmpDir}" -PassThru -Wait
     # msiexec.exe
-    [string] $msi = Resolve-Path "$tmpd\VirtualBox-*amd64.msi"
-    Start-Process -FilePath msiexec.exe -Args "/i $msi /quiet" -PassThru -Wait
-    Remove-Item -Recurse $tmpd
+    [System.String] ${vVirtualBoxMsi} = Resolve-Path "${vTmpDir}\VirtualBox-*amd64.msi"
+    Start-Process -FilePath msiexec.exe -Args "/i ${vVirtualBoxMsi} /quiet" -PassThru -Wait
+    Remove-Item -Recurse ${vTmpDir}
 }
 
 # Start VirtualBox
-Start-Process -FilePath "C:\Program Files\Oracle\VirtualBox\VirtualBox.exe" -PassThru
+Start-Process -FilePath "${VIRTUALBOX}" -PassThru
 
