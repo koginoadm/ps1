@@ -8,7 +8,7 @@
 #     <kbd>Windows</kbd> + <kbd>R</kbd> => ssh root@192.168.1.100
 #
 # - Install
-#     powershell.exe -Command "Invoke-RestMethod -Uri "https://raw.githubusercontent.com/koginoadm/ssh/master/ssh.bat" | Out-File -Encoding utf8 "${env:Userprofile}\ssh.bat""
+#     powershell.exe -Command "Invoke-RestMethod -Uri "https://raw.githubusercontent.com/koginoadm/ps1/master/ssh/ssh.bat" | Out-File -Encoding utf8 "${env:Userprofile}\ssh.bat""
 #
 # - Reference
 #     https://technet.microsoft.com/ja-jp/library/jj554824.aspx
