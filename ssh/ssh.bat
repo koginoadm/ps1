@@ -35,13 +35,15 @@
 ################
 #${ttInstallUri} = "http://ymu.dl.osdn.jp/ttssh2/67179/teraterm-4.94.exe"
 #${ttInstallUri} = "http://ymu.dl.osdn.jp/ttssh2/67769/teraterm-4.95.exe"
-${ttInstallUri} = "http://jaist.dl.osdn.jp/ttssh2/68252/teraterm-4.96.exe"
+#${ttInstallUri} = "http://jaist.dl.osdn.jp/ttssh2/68252/teraterm-4.96.exe"
+${ttZipUri} = "http://ymu.dl.osdn.jp/ttssh2/68252/teraterm-4.96.zip"
 
 
 ################
 # variables
 ################
-${sshDir}  = "${env:Userprofile}\teraterm\ssh"
+${ttDir}   = "${env:Userprofile}\teraterm"
+${sshDir}  = "${ttDir}\ssh"
 ################################
 # 任意のディレクトリを指定
 ${userSshDir} = "${env:Userprofile}\GoogleDrive\ssh"
@@ -50,21 +52,52 @@ if (Test-Path -PathType container ${userSshDir}) { ${sshDir} = "${userSshDir}" }
 ${logDir}  = "${sshDir}\log"
 ${keyDir}  = "${sshDir}\key"
 ${csvFile} = "${sshDir}\hosts.csv"
-${ttInstallExe} = "${env:TEMP}\$(Split-Path -Path $(Split-Path -Path ${ttInstallUri} -NoQualifier) -Leaf)" ### backport for Windows 7 (duplicate "Split-Path")
+#${ttInstallExe} = "${env:TEMP}\$(Split-Path -Path $(Split-Path -Path ${ttInstallUri} -NoQualifier) -Leaf)" ### backport for Windows 7 (duplicate "Split-Path")
+${ttZipFile} = "${env:TEMP}\$(Split-Path -Path $(Split-Path -Path ${ttZipUri} -NoQualifier) -Leaf)" ### backport for Windows 7 (duplicate "Split-Path")
+
+
+################
+# function
+################
+function Expand-Zip {
+   # Create Explorer object
+   $Expcom = New-Object -ComObject Shell.Application
+   # Register the zip file path of the 1st argument.
+   $zipFile = $Expcom.NameSpace($args[0])
+   # Register the destination directory path of the 2nd argument.
+   $tgtDir = $Expcom.NameSpace($args[1])
+   # Gets the object (file) list in the zip file and passes it to ForEach-Object.
+   $zipFile.Items() | ForEach-Object {
+      # Copy files one by one to the output directory.
+      $tgtDir.CopyHere($_.path)
+   }
+}
 
 
 ################
 # main
 ################
 ### Create directorys.
-if ((Get-Item ${sshDir}).Mode 2>$null | Select-String -NotMatch '^d') { mkdir ${sshDir}; Start-Sleep 1; }
-if ((Get-Item ${logDir}).Mode 2>$null | Select-String -NotMatch '^d') { mkdir ${logDir}; Start-Sleep 1; }
-if ((Get-Item ${keyDir}).Mode 2>$null | Select-String -NotMatch '^d') { mkdir ${keyDir}; Start-Sleep 1; }
+if ((Get-Item ${sshDir}).Mode 2>$null | Select-String -NotMatch '^d') { mkdir ${sshDir}; Start-Sleep 0.5; }
+if ((Get-Item ${logDir}).Mode 2>$null | Select-String -NotMatch '^d') { mkdir ${logDir}; Start-Sleep 0.5; }
+if ((Get-Item ${keyDir}).Mode 2>$null | Select-String -NotMatch '^d') { mkdir ${keyDir}; Start-Sleep 0.5; }
 if (-Not (Test-Path ${csvFile}))
 {
-    Write-Output "Hostname,Username,AuthType,Value,Alias`r`n`r`n# In the first line, Header information is written. Please do not edit!`r`n`r`n# Please refer to the following and set it like the description example.`r`n# Hostname[:Port],Username,AuthenticationType[password|publickey],Value[Passphrase|SecretKeyName],Set an alias character string as an argument of ssh command. UPN notation is recommended.`r`n`r`n# description example:`r`nwww.example.com:10022,admin,publickey,id_rsa,admin@www.example.com`r`n192.168.1.100,root,password,P@ssw0rd,root@TEST01`r`n" > ${csvFile}
-    Write-Output "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [NOTICE]: Check the file( ${csvFile} ) and set it as shown in the description example."
-    Write-Output "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [NOTICE]: Edit the file( ${csvFile} ) and try again."
+    # Generate CSV File
+    Write-Output "Hostname,Username,AuthType,Value,Alias" >> ${csvFile}
+    Write-Output "#~~~~~~~~ !!! DO NOT EDIT !!! ~~~~~~~~ <= In the first line, Header information is written." >> ${csvFile}
+    Write-Output "" >> ${csvFile}
+    Write-Output "# Please refer to the following and set it like the description example." >> ${csvFile}
+    Write-Output "# Hostname[:Port],Username,AuthType[password|publickey],Value[Pass|KeyFile(InKeyDir)],Alias(UPN recommended)" >> ${csvFile}
+    Write-Output "" >> ${csvFile}
+    Write-Output "# description example:" >> ${csvFile}
+    Write-Output "www.example.com:10022,admin,publickey,id_rsa,admin@www.example.com" >> ${csvFile}
+    Write-Output "192.168.1.100,root,password,P@ssw0rd,root@TEST01" >> ${csvFile}
+    # Output Logs
+    Write-Output "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [NOTICE]: Check the following CSV file and set it as shown in the description example."
+    Write-Output "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [NOTICE]: CSV file ... ${csvFile}"
+    Write-Output "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [NOTICE]: Edit the CSV file and try again."
+    # Open CSV File by notepad.exe
     Start-Process -FilePath notepad.exe -ArgumentList ${csvFile}
 }
 
@@ -73,14 +106,21 @@ if (-Not (Test-Path ${csvFile}))
 ### If ttermpro.exe does not exist,
 if (-Not (${sshClient}))
 {
-    Invoke-WebRequest -Uri ${ttInstallUri} -OutFile ${ttInstallExe}
-    Start-Process -FilePath ${ttInstallExe} -Args '/silent /sp-' -PassThru -Wait
-    [System.String] ${sshClient} = Get-ChildItem -recurse "C:\Program Files*\teraterm" | Where-Object { $_.Name -match "ttermpro" } | ForEach-Object { $_.FullName }
+    #Invoke-WebRequest -Uri ${ttInstallUri} -OutFile ${ttInstallExe}
+    #Start-Process -FilePath ${ttInstallExe} -Args '/silent /sp-' -PassThru -Wait
+    [System.String] ${sshClient} = Get-ChildItem -recurse ${ttDir} 2>$null | Where-Object { $_.Name -match "ttermpro" } | ForEach-Object { $_.FullName }
     if (-Not (${sshClient}))
     {
-        Write-Warning "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [ERROR]: ttermpro.exe not found in `"C:\Program Files*`"."
-        [Console]::ReadKey() | Out-Null
-        exit 1
+        if ((Get-Item ${ttDir}).Mode 2>$null | Select-String -NotMatch '^d') { mkdir ${ttDir}; Start-Sleep 0.5; }
+        Invoke-WebRequest -Uri ${ttZipUri} -OutFile ${ttZipFile}
+        Expand-Zip ${ttZipFile} ${ttDir}
+        [System.String] ${sshClient} = Get-ChildItem -recurse ${ttDir} | Where-Object { $_.Name -match "ttermpro" } | ForEach-Object { $_.FullName }
+        if (-Not (${sshClient}))
+        {
+            Write-Warning "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [ERROR]: ttermpro.exe not found in `"C:\Program Files*`", and, failed to install teraterm to `"${ttDir}`"."
+            [Console]::ReadKey() | Out-Null
+            exit 1
+        }
     }
 }
 
