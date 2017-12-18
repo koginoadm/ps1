@@ -26,6 +26,7 @@
 #     2017-09-17 modified.
 #     2017-09-23 modified.
 #     2017-11-30 modified.
+#     2017-12-18 modified.
 #     yyyy-MM-dd modified.
 # 
 
@@ -33,9 +34,6 @@
 ################
 # constant
 ################
-#${ttInstallUri} = "http://ymu.dl.osdn.jp/ttssh2/67179/teraterm-4.94.exe"
-#${ttInstallUri} = "http://ymu.dl.osdn.jp/ttssh2/67769/teraterm-4.95.exe"
-#${ttInstallUri} = "http://jaist.dl.osdn.jp/ttssh2/68252/teraterm-4.96.exe"
 ${ttZipUri} = "http://ymu.dl.osdn.jp/ttssh2/68252/teraterm-4.96.zip"
 
 
@@ -52,7 +50,6 @@ if (Test-Path -PathType container ${userSshDir}) { ${sshDir} = "${userSshDir}" }
 ${logDir}  = "${sshDir}\log"
 ${keyDir}  = "${sshDir}\key"
 ${csvFile} = "${sshDir}\hosts.csv"
-#${ttInstallExe} = "${env:TEMP}\$(Split-Path -Path $(Split-Path -Path ${ttInstallUri} -NoQualifier) -Leaf)" ### backport for Windows 7 (duplicate "Split-Path")
 ${ttZipFile} = "${env:TEMP}\$(Split-Path -Path $(Split-Path -Path ${ttZipUri} -NoQualifier) -Leaf)" ### backport for Windows 7 (duplicate "Split-Path")
 
 
@@ -106,8 +103,6 @@ if (-Not (Test-Path ${csvFile}))
 ### If ttermpro.exe does not exist,
 if (-Not (${sshClient}))
 {
-    #Invoke-WebRequest -Uri ${ttInstallUri} -OutFile ${ttInstallExe}
-    #Start-Process -FilePath ${ttInstallExe} -Args '/silent /sp-' -PassThru -Wait
     [System.String] ${sshClient} = Get-ChildItem -recurse ${ttDir} 2>$null | Where-Object { $_.Name -match "ttermpro" } | ForEach-Object { $_.FullName }
     if (-Not (${sshClient}))
     {
