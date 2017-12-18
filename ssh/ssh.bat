@@ -100,20 +100,20 @@ if (-Not (Test-Path ${csvFile}))
 
 ### Search for ttermpro.exe from "${ttDir}\teraterm*" and get the full path of ttermpro.exe.
 [System.String] ${sshClient} = Get-ChildItem -recurse "${ttDir}\teraterm*" 2>$null | Where-Object { $_.Name -match "ttermpro" } | ForEach-Object -Process { ${i} = $_.FullName } -End { ${i} }
-Remove-Variable i
+${i} = ""
 ### If ttermpro.exe does not exist,
 if (-Not (${sshClient}))
 {
     ### Search for ttermpro.exe from "C:\Program Files*\teraterm" and get the full path of ttermpro.exe.
     [System.String] ${sshClient} = Get-ChildItem -recurse "C:\Program Files*\teraterm" 2>$null | Where-Object { $_.Name -match "ttermpro" } | ForEach-Object -Process { ${i} = $_.FullName } -End { ${i} }
-    Remove-Variable i
+    ${i} = ""
     if (-Not (${sshClient}))
     {
         if ((Get-Item ${ttDir}).Mode 2>$null | Select-String -NotMatch '^d') { mkdir ${ttDir}; Start-Sleep 0.5; }
         Invoke-WebRequest -Uri ${ttZipUri} -OutFile ${ttZipFile}
         Expand-Zip ${ttZipFile} ${ttDir}
         [System.String] ${sshClient} = Get-ChildItem -recurse "${ttDir}\teraterm*" 2>$null | Where-Object { $_.Name -match "ttermpro" } | ForEach-Object -Process { ${i} = $_.FullName } -End { ${i} }
-        Remove-Variable i
+        ${i} = ""
         if (-Not (${sshClient}))
         {
             Write-Warning "$(Get-Date -Format yyyy-MM-ddTHH:mm:sszzz) [ERROR]: ttermpro.exe not found in `"C:\Program Files*`", and, failed to install teraterm to `"${ttDir}`"."
